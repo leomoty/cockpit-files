@@ -34,9 +34,11 @@ import { useDialogs } from "dialogs.jsx";
 import { ListingTable } from "cockpit-components-table.jsx";
 import { EmptyStatePanel } from "cockpit-components-empty-state.jsx";
 
+import * as timeformat from "timeformat";
 import { ContextMenu } from "cockpit-components-context-menu.jsx";
 import { fileActions, ConfirmDeletionDialog } from "./fileActions.jsx";
 import { useFilesContext } from "./app";
+import { SortByDirection } from "@patternfly/react-table";
 
 const _ = cockpit.gettext;
 
@@ -342,6 +344,10 @@ export const FilesCardBody = ({
         </ContextMenu>
     );
 
+    const sortRows = (rows, direction, idx) => {
+        console.log(rows, direction, idx);
+    };
+
     return (
         <div id={files_parent_id}>
             {contextMenu}
@@ -369,7 +375,12 @@ export const FilesCardBody = ({
                       id="folder-view"
                       className="pf-m-no-border-rows"
                       variant="compact"
-                      columns={[_("Name")]}
+                      sortBy={{ index: 0, direction: SortByDirection.asc }}
+                      columns={[
+                          { title: _("Name"), sortable: true, props: { className: "folder-view-name-column" } },
+                          _("Size"),
+                          { title:_("Modified"), props: { modifier: "nowrap" } }
+                      ]}
                       rows={sortedFiles.map(file => ({
                           columns: [
                               {
@@ -379,9 +390,24 @@ export const FilesCardBody = ({
                                         key={file.name}
                                         isSelected={!!selected.find(s => s.name === file.name)}
                                         isGrid={isGrid}
-                                      />)
+                                      />),
+                                  sortKey: file.name,
+                              },
+                              {
+                                  title: (
+                                      <p>{cockpit.format_bytes(file.size)}</p>
+                                  ),
+                              },
+                              {
+                                  title: (
+                                      <p>{timeformat.dateTime(file.mtime * 1000)}</p>
+                                  ),
+                                  props: { modifier: "nowrap" }
                               }
-                          ]
+                          ],
+                          props: {
+                              className: `file-${file.name}-row`
+                          }
                       }))}
                     />}
             </div>
