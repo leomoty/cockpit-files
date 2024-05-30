@@ -378,7 +378,7 @@ export const FilesCardBody = ({
                       sortBy={{ index: 0, direction: SortByDirection.asc }}
                       columns={[
                           { title: _("Name"), sortable: true, props: { className: "folder-view-name-column" } },
-                          _("Size"),
+                          { title: _("Size") },
                           { title:_("Modified"), props: { modifier: "nowrap" } }
                       ]}
                       rows={sortedFiles.map(file => ({
@@ -406,7 +406,7 @@ export const FilesCardBody = ({
                               }
                           ],
                           props: {
-                              className: `file-${file.name}-row`
+                              className:  `file-${file.name}-row ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`
                           }
                       }))}
                     />}

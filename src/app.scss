@@ -173,3 +173,7 @@ button.breadcrumb-edit-cancel-button {
     width: 100%;
   }
 }
+
+.folder-view-row-selected {
+  background-color: var(--pf-v5-c-card--m-selectable--m-selected--BackgroundColor);
+}
