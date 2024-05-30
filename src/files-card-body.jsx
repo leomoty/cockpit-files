@@ -420,7 +420,8 @@ export const FilesCardBody = ({
                               }
                           ],
                           props: {
-                              className:  `file-${file.name}-row ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`
+                              className:  `file-${file.name}-row ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`,
+                              "data-item": file.name
                           }
                       }))}
                     />}
@@ -476,7 +477,11 @@ const Item = React.memo(function Item({ file, isSelected, isGrid, isCard }) {
     } else {
         return (
             <Flex spaceItems={{ default: "spaceItemsSm" }}>
-                <Icon size="md" isInline>
+                <Icon
+                  size="md"
+                  isInline
+                  className={"item-button " + getFileType(file)}
+                >
                     {file.type === "dir" || file.to === "dir"
                         ? <FolderIcon />
                         : <FileIcon />}
