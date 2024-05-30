@@ -345,7 +345,17 @@ export const FilesCardBody = ({
     );
 
     const sortRows = (rows, direction, idx) => {
-        console.log(rows, direction, idx);
+        const isNumeric = idx == 1 || idx == 2;
+        const sortedRows = rows.sort((a, b) => {
+            const aitem = a.columns[idx].sortKey ?? a.columns[idx].title;
+            const bitem = b.columns[idx].sortKey ?? b.columns[idx].title;
+            if (isNumeric) {
+                return bitem - aitem;
+            } else {
+                return aitem.localeCompare(bitem);
+            }
+        });
+        return direction === SortByDirection.asc ? sortedRows : sortedRows.reverse();
     };
 
     return (
@@ -367,6 +377,7 @@ export const FilesCardBody = ({
                                   key={file.name}
                                   isSelected={!!selected.find(s => s.name === file.name)}
                                   isGrid={isGrid}
+                                  isCard
                                 />)}
                         </Gallery>
                     </CardBody>}
@@ -376,10 +387,11 @@ export const FilesCardBody = ({
                       className="pf-m-no-border-rows"
                       variant="compact"
                       sortBy={{ index: 0, direction: SortByDirection.asc }}
+                      sortMethod={sortRows}
                       columns={[
                           { title: _("Name"), sortable: true, props: { className: "folder-view-name-column" } },
-                          { title: _("Size") },
-                          { title:_("Modified"), props: { modifier: "nowrap" } }
+                          { title: _("Size"), sortable: true },
+                          { title:_("Modified"), sortable: true, props: { modifier: "nowrap" } }
                       ]}
                       rows={sortedFiles.map(file => ({
                           columns: [
@@ -397,11 +409,13 @@ export const FilesCardBody = ({
                                   title: (
                                       <p>{cockpit.format_bytes(file.size)}</p>
                                   ),
+                                  sortKey: file.size,
                               },
                               {
                                   title: (
                                       <p>{timeformat.dateTime(file.mtime * 1000)}</p>
                                   ),
+                                  sortKey: file.mtime,
                                   props: { modifier: "nowrap" }
                               }
                           ],
@@ -416,7 +430,7 @@ export const FilesCardBody = ({
 };
 
 // Memoize the Item component as rendering thousands of them on each render of parent component is costly.
-const Item = React.memo(function Item({ file, isSelected, isGrid }) {
+const Item = React.memo(function Item({ file, isSelected, isGrid, isCard }) {
     function getFileType(file) {
         if (file.type === "dir") {
             return "directory-item";
@@ -427,35 +441,48 @@ const Item = React.memo(function Item({ file, isSelected, isGrid }) {
         }
     }
 
-    return (
-        <Card
-          className={"item-button " + getFileType(file)}
-          data-item={file.name}
-          id={"card-item-" + file.name + file.type}
-          isClickable isCompact
-          isPlain
-          isSelected={isSelected}
-        >
-            <CardHeader
-              selectableActions={{
-                  name: file.name,
-                  selectableActionAriaLabelledby: "card-item-" + file.name + file.type,
-                  selectableActionId: "card-item-" + file.name + file.type + "-selectable-action",
-              }}
+    if (isCard) {
+        return (
+            <Card
+              className={"item-button " + getFileType(file)}
+              data-item={file.name}
+              id={"card-item-" + file.name + file.type}
+              isClickable isCompact
+              isPlain
+              isSelected={isSelected}
             >
-                <Icon
-                  size={isGrid
-                      ? "xl"
-                      : "lg"} isInline
+                <CardHeader
+                  selectableActions={{
+                      name: file.name,
+                      selectableActionAriaLabelledby: "card-item-" + file.name + file.type,
+                      selectableActionId: "card-item-" + file.name + file.type + "-selectable-action",
+                  }}
                 >
+                    <Icon
+                      size={isGrid
+                          ? "xl"
+                          : "lg"} isInline
+                    >
+                        {file.type === "dir" || file.to === "dir"
+                            ? <FolderIcon />
+                            : <FileIcon />}
+                    </Icon>
+                    <CardTitle>
+                        {file.name}
+                    </CardTitle>
+                </CardHeader>
+            </Card>
+        );
+    } else {
+        return (
+            <Flex spaceItems={{ default: "spaceItemsSm" }}>
+                <Icon size="md" isInline>
                     {file.type === "dir" || file.to === "dir"
                         ? <FolderIcon />
                         : <FileIcon />}
                 </Icon>
-                <CardTitle>
-                    {file.name}
-                </CardTitle>
-            </CardHeader>
-        </Card>
-    );
+                <p>{file.name}</p>
+            </Flex>
+        );
+    }
 });
