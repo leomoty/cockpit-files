@@ -168,6 +168,7 @@ export const FilesCardBody = ({
         };
 
         const handleDoubleClick = (ev) => {
+            ev.preventDefault();
             const name = getFilenameForEvent(ev);
             const file = sortedFiles?.find(file => file.name === name);
             if (!file)
@@ -181,6 +182,7 @@ export const FilesCardBody = ({
         };
 
         const handleClick = (ev) => {
+            ev.preventDefault();
             const name = getFilenameForEvent(ev);
             const file = sortedFiles?.find(file => file.name === name);
             if (!file) {
@@ -360,6 +362,26 @@ export const FilesCardBody = ({
         return direction === SortByDirection.asc ? sortedRows : sortedRows.reverse();
     };
 
+    const getFileTypeClass = (file) => {
+        if (file.type === "dir") {
+            return "directory-item";
+        } else if (file.type === "lnk" && file?.to === "dir") {
+            return "directory-item";
+        } else {
+            return "file-item";
+        }
+    };
+
+    const getFileType = (file) => {
+        if (file.type === "dir") {
+            return "folder";
+        } else if (file.type === "lnk" && file?.to === "dir") {
+            return "folder";
+        } else {
+            return "file";
+        }
+    };
+
     return (
         <div id={files_parent_id}>
             {contextMenu}
@@ -370,63 +392,53 @@ export const FilesCardBody = ({
                 <EmptyStatePanel
                   paragraph={currentFilter ? _("No matching results") : _("Directory is empty")}
                 />}
-                {isGrid &&
-                    <CardBody id="files-card-body">
-                        <Gallery id="folder-view">
-                            {sortedFiles.map(file =>
-                                <Item
-                                  file={file}
-                                  key={file.name}
-                                  isSelected={!!selected.find(s => s.name === file.name)}
-                                  isGrid={isGrid}
-                                  isCard
-                                />)}
-                        </Gallery>
-                    </CardBody>}
-                {!isGrid &&
-                    <ListingTable
-                      id="folder-view"
-                      className="pf-m-no-border-rows fileview"
-                      variant="compact"
-                      sortBy={{ index: 0, direction: SortByDirection.asc }}
-                      sortMethod={sortRows}
-                      columns={[
-                          { title: _("Name"), sortable: true, props: { className: "folder-view-name-column" } },
-                          { title: _("Size"), sortable: true },
-                          { title:_("Modified"), sortable: true, props: { modifier: "nowrap" } }
-                      ]}
-                      rows={sortedFiles.map(file => ({
-                          columns: [
-                              {
-                                  title: (
-                                      <Item
-                                        file={file}
-                                        key={file.name}
-                                        isSelected={!!selected.find(s => s.name === file.name)}
-                                        isGrid={isGrid}
-                                      />),
-                                  sortKey: file.name,
-                              },
-                              {
-                                  title: (
-                                      <p>{cockpit.format_bytes(file.size)}</p>
-                                  ),
-                                  sortKey: file.size,
-                              },
-                              {
-                                  title: (
-                                      <p>{timeformat.dateTime(file.mtime * 1000)}</p>
-                                  ),
-                                  sortKey: file.mtime,
-                                  props: { modifier: "nowrap" }
-                              }
-                          ],
-                          props: {
-                              className:  `file-${file.name}-row ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`,
-                              "data-item": file.name
+                {sortedFiles.length === 0 && <EmptyStatePanel paragraph={_("Directory is empty")} />}
+                <ListingTable
+                  id="folder-view"
+                  className={`pf-m-no-border-rows fileview ${isGrid ? 'view-grid' : 'view-details'}`}
+                  variant="compact"
+                  sortBy={{ index: 0, direction: SortByDirection.asc }}
+                  sortMethod={sortRows}
+                  columns={[
+                      { title: _("Name"), sortable: true, props: { className: "folder-view-name-column" } },
+                      { title: _("Size"), sortable: true },
+                      { title:_("Modified"), sortable: true, props: { modifier: "nowrap" } }
+                  ]}
+                  rows={sortedFiles.map(file => ({
+                      columns: [
+                          {
+                              title: (
+                                  <Item
+                                    file={file}
+                                    key={file.name}
+                                    isSelected={!!selected.find(s => s.name === file.name)}
+                                    isGrid={isGrid}
+                                  />),
+                              sortKey: file.name,
+                              props: { className: "item-name" }
+                          },
+                          {
+                              title: (
+                                  <p>{cockpit.format_bytes(file.size)}</p>
+                              ),
+                              sortKey: file.size,
+                              props: { className: "item-size" }
+                          },
+                          {
+                              title: (
+                                  <p>{timeformat.dateTime(file.mtime * 1000)}</p>
+                              ),
+                              sortKey: file.mtime,
+                              props: { modifier: "nowrap", className: "item-date" }
                           }
-                      }))}
-                    />}
+                      ],
+                      props: {
+                          className:  `file-${file.name}-row ${getFileTypeClass(file)} ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`,
+                          "data-item": file.name,
+                          "data-type": getFileType(file),
+                      }
+                  }))}
+                />
             </div>
         </div>
     );
@@ -478,18 +490,7 @@ const Item = React.memo(function Item({ file, isSelected, isGrid, isCard }) {
         );
     } else {
         return (
-            <Flex spaceItems={{ default: "spaceItemsSm" }}>
-                <Icon
-                  size="md"
-                  isInline
-                  className={"item-button " + getFileType(file)}
-                >
-                    {file.type === "dir" || file.to === "dir"
-                        ? <FolderIcon />
-                        : <FileIcon />}
-                </Icon>
-                <p>{file.name}</p>
-            </Flex>
+            <a href="#">{file.name}</a>
         );
     }
 });
