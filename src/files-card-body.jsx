@@ -40,6 +40,8 @@ import { fileActions, ConfirmDeletionDialog } from "./fileActions.jsx";
 import { useFilesContext } from "./app";
 import { SortByDirection } from "@patternfly/react-table";
 
+import "./files-card-body.scss";
+
 const _ = cockpit.gettext;
 
 const compare = (sortBy) => {
@@ -384,7 +386,7 @@ export const FilesCardBody = ({
                 {!isGrid &&
                     <ListingTable
                       id="folder-view"
-                      className="pf-m-no-border-rows"
+                      className="pf-m-no-border-rows fileview"
                       variant="compact"
                       sortBy={{ index: 0, direction: SortByDirection.asc }}
                       sortMethod={sortRows}
