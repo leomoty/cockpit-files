@@ -6,7 +6,7 @@
     --icon-size: 32px;
     border-collapse: collapse;
     inline-size: 100%;
-    margin: 0.5rem;
+    margin: var(--pf-v5-global--spacer--sm);
     line-height: var(--pf-v5-global--LineHeight--md);
     font-family: var(--pf-v5-global--FontFamily--text);
     font-size: var(--pf-v5-global--FontSize--md);
@@ -64,7 +64,7 @@
 
     &.view-details .item-name a::before {
         display: inline-block;
-        margin-inline-end: 0.5em;
+        margin-inline-end: var(--pf-v5-global--spacer--sm);
         // FIXME: Figure out why there's an offset
         margin-block-start: -4px;
         position: relative;
@@ -76,14 +76,14 @@
         &::before {
             display: block;
             margin-inline: auto;
-            margin-block-end: 0.5em;
+            margin-block-end: var(--pf-v5-global--spacer--sm);
         }
     }
 
     &.view-details {
         --icon-size: 16px;
-        inline-size: calc(100% - 1rem);
-        margin-block: 0.5rem;
+        inline-size: calc(100% - var(--pf-v5-global--spacer--md));
+        margin-block: var(--pf-v5-global--spacer--sm);
         margin-inline: auto;
 
         tbody tr {
@@ -121,12 +121,12 @@
             gap: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--xs);
             grid-template-columns: repeat(auto-fit, 10rem);
             justify-content: space-between;
-            margin: 0.5em;
+            margin: var(--pf-v5-global--spacer--sm);
         }
 
         tr {
             display: block;
-            padding: 0.5em;
+            padding: var(--pf-v5-global--spacer--sm);
 
             td {
                 display: block;
