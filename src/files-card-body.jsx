@@ -411,7 +411,6 @@ export const FilesCardBody = ({
                 <EmptyStatePanel
                   paragraph={currentFilter ? _("No matching results") : _("Directory is empty")}
                 />}
-                {sortedFiles.length === 0 && <EmptyStatePanel paragraph={_("Directory is empty")} />}
                 <Table
                   id="folder-view"
                   className={`pf-m-no-border-rows fileview ${isGrid ? 'view-grid' : 'view-details'}`}
@@ -419,7 +418,7 @@ export const FilesCardBody = ({
                 >
                     <Thead>
                         <Tr>
-                            <Th className="folder-view-name-column">{_("Name")}</Th>
+                            <Th>{_("Name")}</Th>
                             <Th>{_("Size")}</Th>
                             <Th modifier="nowrap">{_("Modified")}</Th>
                         </Tr>
@@ -427,18 +426,13 @@ export const FilesCardBody = ({
                     <Tbody>
                         {sortedFiles.map((file, rowIndex) => (
                             <Tr
-                              className={`file-${file.name}-row ${getFileTypeClass(file)} ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`}
-                              datatype={getFileType(file)}
+                              className={`${getFileTypeClass(file)} ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`}
+                              data-type={getFileType(file)}
                               key={rowIndex}
                               data-item={file.name}
                             >
                                 <Td className="item-name" dataLabel={`${getFileType(file)} name`}>
-                                    <Item
-                                      file={file}
-                                      key={file.name}
-                                      isSelected={!!selected.find(s => s.name === file.name)}
-                                      isGrid={isGrid}
-                                    />
+                                    <a href="#">{file.name}</a>
                                 </Td>
                                 <Td className="item-size" dataLabel="size">
                                     {cockpit.format_bytes(file.size)}
@@ -459,52 +453,8 @@ export const FilesCardBody = ({
 };
 
 // Memoize the Item component as rendering thousands of them on each render of parent component is costly.
-const Item = React.memo(function Item({ file, isSelected, isGrid, isCard }) {
-    function getFileType(file) {
-        if (file.type === "dir") {
-            return "directory-item";
-        } else if (file.type === "lnk" && file?.to === "dir") {
-            return "directory-item";
-        } else {
-            return "file-item";
-        }
-    }
-
-    if (isCard) {
-        return (
-            <Card
-              className={"item-button " + getFileType(file)}
-              data-item={file.name}
-              id={"card-item-" + file.name + file.type}
-              isClickable isCompact
-              isPlain
-              isSelected={isSelected}
-            >
-                <CardHeader
-                  selectableActions={{
-                      name: file.name,
-                      selectableActionAriaLabelledby: "card-item-" + file.name + file.type,
-                      selectableActionId: "card-item-" + file.name + file.type + "-selectable-action",
-                  }}
-                >
-                    <Icon
-                      size={isGrid
-                          ? "xl"
-                          : "lg"} isInline
-                    >
-                        {file.type === "dir" || file.to === "dir"
-                            ? <FolderIcon />
-                            : <FileIcon />}
-                    </Icon>
-                    <CardTitle>
-                        {file.name}
-                    </CardTitle>
-                </CardHeader>
-            </Card>
-        );
-    } else {
-        return (
-            <a href="#">{file.name}</a>
-        );
-    }
+const Item = React.memo(function Item({ file }) {
+    return (
+        <a href="#">{file.name}</a>
+    );
 });
