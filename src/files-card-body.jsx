@@ -451,10 +451,3 @@ export const FilesCardBody = ({
         </div>
     );
 };
-
-// Memoize the Item component as rendering thousands of them on each render of parent component is costly.
-const Item = React.memo(function Item({ file }) {
-    return (
-        <a href="#">{file.name}</a>
-    );
-});
