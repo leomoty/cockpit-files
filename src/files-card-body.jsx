@@ -447,7 +447,7 @@ export const FilesCardBody = ({
                                   modifier="nowrap" className="item-date"
                                   dataLabel="date"
                                 >
-                                    {cockpit.format_bytes(file.size)}
+                                    {timeformat.dateTime(file.mtime * 1000)}
                                 </Td>
                             </Tr>
                         ))}
