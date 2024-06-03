@@ -134,6 +134,8 @@
                 display: block;
                 text-align: center;
                 word-break: break-all;
+                // Override default PF padding
+                padding: 0;
             }
 
             td:not(.item-name) {
