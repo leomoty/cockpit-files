@@ -19,14 +19,22 @@
 
 import React, { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
-    Card, CardBody,
+    Card,
     Flex,
-    Gallery,
     Icon,
     CardTitle, Spinner, CardHeader,
     MenuItem, MenuList,
     Divider,
+    Toolbar,
+    ToolbarContent,
+    ToolbarItem,
+    Select,
+    SelectGroup,
+    SelectList,
+    SelectOption,
+    MenuToggle,
 } from "@patternfly/react-core";
+import { Table, Caption, Thead, Tr, Th, Tbody, Td, SortByDirection } from '@patternfly/react-table';
 import { FileIcon, FolderIcon } from "@patternfly/react-icons";
 
 import cockpit from "cockpit";
@@ -38,7 +46,6 @@ import * as timeformat from "timeformat";
 import { ContextMenu } from "cockpit-components-context-menu.jsx";
 import { fileActions, ConfirmDeletionDialog } from "./fileActions.jsx";
 import { useFilesContext } from "./app";
-import { SortByDirection } from "@patternfly/react-table";
 
 import "./files-card-body.scss";
 
@@ -382,6 +389,18 @@ export const FilesCardBody = ({
         }
     };
 
+    const columns = [
+        {
+            title: _("Name"),
+        },
+        {
+            title: _("Size"),
+        },
+        {
+            title: _("Modified"),
+        }
+    ];
+
     return (
         <div id={files_parent_id}>
             {contextMenu}
@@ -393,52 +412,47 @@ export const FilesCardBody = ({
                   paragraph={currentFilter ? _("No matching results") : _("Directory is empty")}
                 />}
                 {sortedFiles.length === 0 && <EmptyStatePanel paragraph={_("Directory is empty")} />}
-                <ListingTable
+                <Table
                   id="folder-view"
                   className={`pf-m-no-border-rows fileview ${isGrid ? 'view-grid' : 'view-details'}`}
                   variant="compact"
-                  sortBy={{ index: 0, direction: SortByDirection.asc }}
-                  sortMethod={sortRows}
-                  columns={[
-                      { title: _("Name"), sortable: true, props: { className: "folder-view-name-column" } },
-                      { title: _("Size"), sortable: true },
-                      { title:_("Modified"), sortable: true, props: { modifier: "nowrap" } }
-                  ]}
-                  rows={sortedFiles.map(file => ({
-                      columns: [
-                          {
-                              title: (
-                                  <Item
-                                    file={file}
-                                    key={file.name}
-                                    isSelected={!!selected.find(s => s.name === file.name)}
-                                    isGrid={isGrid}
-                                  />),
-                              sortKey: file.name,
-                              props: { className: "item-name" }
-                          },
-                          {
-                              title: (
-                                  <p>{cockpit.format_bytes(file.size)}</p>
-                              ),
-                              sortKey: file.size,
-                              props: { className: "item-size" }
-                          },
-                          {
-                              title: (
-                                  <p>{timeformat.dateTime(file.mtime * 1000)}</p>
-                              ),
-                              sortKey: file.mtime,
-                              props: { modifier: "nowrap", className: "item-date" }
-                          }
-                      ],
-                      props: {
-                          className:  `file-${file.name}-row ${getFileTypeClass(file)} ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`,
-                          "data-item": file.name,
-                          "data-type": getFileType(file),
-                      }
-                  }))}
-                />
+                >
+                    <Thead>
+                        <Tr>
+                            <Th className="folder-view-name-column">{_("Name")}</Th>
+                            <Th>{_("Size")}</Th>
+                            <Th modifier="nowrap">{_("Modified")}</Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {sortedFiles.map((file, rowIndex) => (
+                            <Tr
+                              className={`file-${file.name}-row ${getFileTypeClass(file)} ${selected.some(s => s.name === file.name) ? 'folder-view-row-selected' : ''}`}
+                              datatype={getFileType(file)}
+                              key={rowIndex}
+                              data-item={file.name}
+                            >
+                                <Td className="item-name" dataLabel={`${getFileType(file)} name`}>
+                                    <Item
+                                      file={file}
+                                      key={file.name}
+                                      isSelected={!!selected.find(s => s.name === file.name)}
+                                      isGrid={isGrid}
+                                    />
+                                </Td>
+                                <Td className="item-size" dataLabel="size">
+                                    {cockpit.format_bytes(file.size)}
+                                </Td>
+                                <Td
+                                  modifier="nowrap" className="item-date"
+                                  dataLabel="date"
+                                >
+                                    {cockpit.format_bytes(file.size)}
+                                </Td>
+                            </Tr>
+                        ))}
+                    </Tbody>
+                </Table>
             </div>
         </div>
     );

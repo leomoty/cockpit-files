@@ -186,17 +186,20 @@
 
     &.view-grid {
         --icon-size: 64px;
-        // display: contents;
-        align-items: start;
-        display: grid;
-        // As we're using justify-content: space-between, this is the minimum gap horizontally;
-        gap: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--xs);
-        grid-template-columns: repeat(auto-fit, 10rem);
-        justify-content: space-between;
-        margin: 0.5em;
+        display: contents;
 
         thead {
             display: none;
+        }
+
+        tbody {
+            align-items: start;
+            display: grid;
+            // As we're using justify-content: space-between, this is the minimum gap horizontally;
+            gap: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--xs);
+            grid-template-columns: repeat(auto-fit, 10rem);
+            justify-content: space-between;
+            margin: 0.5em;
         }
 
         tr {
@@ -264,15 +267,15 @@
             grid-template-columns: 1fr repeat(2, calc(var(--details-size) / 2));
         }
 
-        // tbody tr {
-        //     grid: "name size" "name date";
-        //     grid-template-columns: 1fr var(--details-size);
-        //     padding: var(--pf-v5-global--spacer--sm);
-        //
-        //     td {
-        //         padding: 0;
-        //     }
-        // }
+        tbody tr {
+            grid: "name size" "name date";
+            grid-template-columns: 1fr var(--details-size);
+            padding: var(--pf-v5-global--spacer--sm);
+
+            td {
+                padding: 0;
+            }
+        }
 
         .col-name, .item-name {
             justify-self: start;
