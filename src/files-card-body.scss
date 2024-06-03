@@ -92,7 +92,7 @@
             border-block: 1px solid var(--pf-v5-global--BorderColor--100);
         }
 
-        tr:hover {
+        tbody > tr:hover {
             background-color: var(--pf-v5-global--BackgroundColor--200);
         }
 
