@@ -119,7 +119,7 @@
             display: grid;
             // As we're using justify-content: space-between, this is the minimum gap horizontally;
             gap: var(--pf-v5-global--spacer--sm) var(--pf-v5-global--spacer--xs);
-            grid-template-columns: repeat(auto-fit, 10rem);
+            grid-template-columns: repeat(auto-fill, 10rem);
             justify-content: space-between;
             margin: var(--pf-v5-global--spacer--sm);
         }
